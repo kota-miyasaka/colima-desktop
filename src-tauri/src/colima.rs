@@ -3,6 +3,22 @@ use std::path::PathBuf;
 use crate::container_service::OperationResult;
 use crate::error::AppError;
 
+/// .app バンドル起動時は PATH が /usr/bin:/bin 程度しかない。
+/// Homebrew の一般的なインストール先を順に探してフルパスを返す。
+pub fn find_binary(name: &str) -> String {
+    let candidates = [
+        format!("/opt/homebrew/bin/{name}"),  // Apple Silicon Homebrew
+        format!("/usr/local/bin/{name}"),      // Intel Homebrew
+        format!("/usr/bin/{name}"),
+    ];
+    for path in &candidates {
+        if std::path::Path::new(path).exists() {
+            return path.clone();
+        }
+    }
+    name.to_string()
+}
+
 /// Docker socket の検出優先順位:
 /// 1. 引数 socket_path が Some の場合はそれを使用
 /// 2. ~/.colima/default/docker.sock
@@ -82,7 +98,7 @@ pub fn list_colima_profiles() -> Result<Vec<String>, AppError> {
 /// 指定プロファイルで `colima start` を実行する
 pub async fn colima_start(profile: Option<String>) -> Result<OperationResult, AppError> {
     let profile_arg = profile.unwrap_or_else(|| "default".to_string());
-    let mut cmd = tokio::process::Command::new("colima");
+    let mut cmd = tokio::process::Command::new(find_binary("colima"));
     if profile_arg == "default" {
         cmd.arg("start");
     } else {
@@ -106,7 +122,7 @@ pub async fn colima_start(profile: Option<String>) -> Result<OperationResult, Ap
 /// 指定プロファイルで `colima stop` を実行する
 pub async fn colima_stop(profile: Option<String>) -> Result<OperationResult, AppError> {
     let profile_arg = profile.unwrap_or_else(|| "default".to_string());
-    let mut cmd = tokio::process::Command::new("colima");
+    let mut cmd = tokio::process::Command::new(find_binary("colima"));
     if profile_arg == "default" {
         cmd.arg("stop");
     } else {

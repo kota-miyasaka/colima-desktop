@@ -94,10 +94,11 @@ pub async fn list_compose_projects() -> Result<Vec<ComposeProject>> {
 }
 
 pub async fn compose_up(working_dir: &str) -> Result<OperationResult> {
-    let output = std::process::Command::new("docker")
+    let output = tokio::process::Command::new(crate::colima::find_binary("docker"))
         .args(["compose", "up", "-d"])
         .current_dir(working_dir)
         .output()
+        .await
         .map_err(|e| AppError::CommandFailed(e.to_string()))?;
 
     if output.status.success() {
@@ -114,10 +115,11 @@ pub async fn compose_up(working_dir: &str) -> Result<OperationResult> {
 }
 
 pub async fn compose_stop(working_dir: &str) -> Result<OperationResult> {
-    let output = std::process::Command::new("docker")
+    let output = tokio::process::Command::new(crate::colima::find_binary("docker"))
         .args(["compose", "stop"])
         .current_dir(working_dir)
         .output()
+        .await
         .map_err(|e| AppError::CommandFailed(e.to_string()))?;
 
     if output.status.success() {
@@ -134,10 +136,11 @@ pub async fn compose_stop(working_dir: &str) -> Result<OperationResult> {
 }
 
 pub async fn compose_down(working_dir: &str) -> Result<OperationResult> {
-    let output = std::process::Command::new("docker")
+    let output = tokio::process::Command::new(crate::colima::find_binary("docker"))
         .args(["compose", "down"])
         .current_dir(working_dir)
         .output()
+        .await
         .map_err(|e| AppError::CommandFailed(e.to_string()))?;
 
     if output.status.success() {
@@ -154,10 +157,11 @@ pub async fn compose_down(working_dir: &str) -> Result<OperationResult> {
 }
 
 pub async fn compose_restart(working_dir: &str) -> Result<OperationResult> {
-    let output = std::process::Command::new("docker")
+    let output = tokio::process::Command::new(crate::colima::find_binary("docker"))
         .args(["compose", "restart"])
         .current_dir(working_dir)
         .output()
+        .await
         .map_err(|e| AppError::CommandFailed(e.to_string()))?;
 
     if output.status.success() {
