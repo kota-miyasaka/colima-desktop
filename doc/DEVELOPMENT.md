@@ -131,6 +131,29 @@ colima start --profile {profile}   # ✅ 正しい
 colima start {profile}             # ❌ 間違い（profile がインスタンス名になる）
 ```
 
+### Colima 自動起動・自動停止
+- **起動時**: `setup_tray` 内のバックグラウンドタスクで `colima::colima_start(None)` を呼ぶ。既起動時は即座に終了するため副作用なし。
+- **終了時**: `RunEvent::Exit` で `colima::colima_stop(None)` を `block_on` で同期実行。実行中のコンテナもすべて停止する。
+
+```rust
+// 起動時（setup_tray 内）
+tauri::async_runtime::spawn(async move {
+    let _ = colima::colima_start(None).await;
+    refresh_tray_status(&app_handle, &status_item_clone, &running_item_clone).await;
+});
+
+// 終了時（run ループ内）
+.run(|_app_handle, event| {
+    if let tauri::RunEvent::Exit = event {
+        tauri::async_runtime::block_on(async {
+            let _ = colima::colima_stop(None).await;
+        });
+    }
+});
+```
+
+`RunEvent::Exit` はメインスレッドで発火するため `block_on` が使える（tokio スレッド内では使用不可）。
+
 ### async / CLI 実行
 - Tauri コマンドはすべて `async fn`
 - CLI サブプロセスは `tokio::process::Command`（ブロッキングを避ける）

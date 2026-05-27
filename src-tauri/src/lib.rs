@@ -173,8 +173,15 @@ pub fn run() {
             colima_start,
             colima_stop,
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application")
+        .run(|_app_handle, event| {
+            if let tauri::RunEvent::Exit = event {
+                tauri::async_runtime::block_on(async {
+                    let _ = colima::colima_stop(None).await;
+                });
+            }
+        });
 }
 
 /// メニューバー（System Tray）のセットアップ
@@ -253,6 +260,8 @@ fn setup_tray(app: &mut tauri::App) -> tauri::Result<()> {
     let running_item_clone = Arc::clone(&running_item);
 
     tauri::async_runtime::spawn(async move {
+        // 起動時に Colima を自動起動（既起動時は即座に終了するので副作用なし）
+        let _ = colima::colima_start(None).await;
         refresh_tray_status(&app_handle, &status_item_clone, &running_item_clone).await;
     });
 
