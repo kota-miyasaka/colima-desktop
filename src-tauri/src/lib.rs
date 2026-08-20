@@ -217,8 +217,8 @@ fn setup_tray(app: &mut tauri::App) -> tauri::Result<()> {
         ],
     )?;
 
-    const ICON_RGBA: &[u8] = include_bytes!("tray_icon.rgba");
-    let tray_icon = tauri::image::Image::new(ICON_RGBA, 22, 22);
+    const ICON_PNG: &[u8] = include_bytes!("../icons/tray-icon.png");
+    let tray_icon = tauri::image::Image::from_bytes(ICON_PNG)?;
 
     let _tray = TrayIconBuilder::with_id("main")
         .icon(tray_icon)
