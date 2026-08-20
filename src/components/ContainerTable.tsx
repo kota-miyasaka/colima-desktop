@@ -128,14 +128,14 @@ export function ContainerTable({ containers, refetch }: Props) {
         <thead>
           <tr>
             <th>名前</th>
-            <th>ID</th>
-            <th>イメージ</th>
             <th>State</th>
-            <th>Status</th>
-            <th>作成日時</th>
             <th>ポート</th>
             <th>操作</th>
             <th>ログ</th>
+            <th>ID</th>
+            <th>イメージ</th>
+            <th>Status</th>
+            <th>作成日時</th>
           </tr>
         </thead>
         <tbody>
@@ -146,13 +146,9 @@ export function ContainerTable({ containers, refetch }: Props) {
             return (
               <tr key={c.id}>
                 <td className="col-name">{getContainerName(c)}</td>
-                <td className="col-id mono">{c.id.slice(0, 7)}</td>
-                <td className="col-image">{c.image}</td>
                 <td className="col-state">
                   <StateBadge state={c.state} />
                 </td>
-                <td className="col-status">{c.status}</td>
-                <td className="col-created">{formatCreated(c.created)}</td>
                 <td className="col-ports mono">
                   {formatPorts(c)
                     .split("\n")
@@ -222,6 +218,10 @@ export function ContainerTable({ containers, refetch }: Props) {
                     Logs
                   </button>
                 </td>
+                <td className="col-id mono">{c.id.slice(0, 7)}</td>
+                <td className="col-image">{c.image}</td>
+                <td className="col-status">{c.status}</td>
+                <td className="col-created">{formatCreated(c.created)}</td>
               </tr>
             );
           })}

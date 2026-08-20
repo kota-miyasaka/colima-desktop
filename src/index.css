@@ -42,7 +42,7 @@ body {
   font-size: 1.6rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
-  color: #e94560;
+  color: #22c55e;
   letter-spacing: 0.5px;
 }
 
@@ -126,7 +126,7 @@ body {
 }
 
 .retry-btn {
-  background: #e94560;
+  background: #22c55e;
   color: white;
   border: none;
   border-radius: 8px;
@@ -138,7 +138,7 @@ body {
 }
 
 .retry-btn:hover {
-  background: #c73652;
+  background: #16a34a;
 }
 
 .retry-btn:disabled {
@@ -157,7 +157,7 @@ body {
   width: 20px;
   height: 20px;
   border: 2px solid #0f3460;
-  border-top-color: #e94560;
+  border-top-color: #22c55e;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin-bottom: 1rem;
@@ -177,8 +177,8 @@ body {
 
 /* ---- サイドバー ---- */
 .sidebar {
-  width: 180px;
-  min-width: 180px;
+  width: 150px;
+  min-width: 150px;
   background: #0d1b2a;
   border-right: 1px solid #0f3460;
   display: flex;
@@ -193,7 +193,7 @@ body {
 .sidebar-logo {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #e94560;
+  color: #22c55e;
   letter-spacing: 0.5px;
 }
 
@@ -222,9 +222,9 @@ body {
 
 .nav-item.active {
   background: #16213e;
-  color: #e94560;
+  color: #22c55e;
   font-weight: 600;
-  border-left: 2px solid #e94560;
+  border-left: 2px solid #22c55e;
 }
 
 /* ---- メインコンテンツ ---- */
@@ -551,7 +551,7 @@ body {
   font-size: 1.3rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
-  color: #e94560;
+  color: #22c55e;
 }
 
 /* ---- Colima プロファイル選択 ---- */
@@ -583,7 +583,7 @@ body {
 }
 
 .profile-select:focus {
-  border-color: #e94560;
+  border-color: #22c55e;
 }
 
 .profile-select:disabled {
@@ -674,7 +674,7 @@ body {
 }
 
 .pull-input:focus {
-  border-color: #e94560;
+  border-color: #22c55e;
 }
 
 .pull-input:disabled {
@@ -683,7 +683,7 @@ body {
 }
 
 .pull-btn {
-  background: #e94560;
+  background: #22c55e;
   color: white;
   border: none;
   border-radius: 6px;
@@ -696,7 +696,7 @@ body {
 }
 
 .pull-btn:hover:not(:disabled) {
-  background: #c73652;
+  background: #16a34a;
 }
 
 .pull-btn:disabled {
@@ -756,7 +756,7 @@ body {
 }
 
 .settings-input:focus {
-  border-color: #e94560;
+  border-color: #22c55e;
 }
 
 .settings-select {
@@ -773,7 +773,7 @@ body {
 }
 
 .settings-select:focus {
-  border-color: #e94560;
+  border-color: #22c55e;
 }
 
 .settings-radio-group {
@@ -791,7 +791,7 @@ body {
 }
 
 .settings-radio-label input[type="radio"] {
-  accent-color: #e94560;
+  accent-color: #22c55e;
   width: 15px;
   height: 15px;
   cursor: pointer;
@@ -848,7 +848,7 @@ body {
 }
 
 .save-btn {
-  background: #e94560;
+  background: #22c55e;
   color: white;
   border: none;
   border-radius: 7px;
@@ -860,7 +860,7 @@ body {
 }
 
 .save-btn:hover {
-  background: #c73652;
+  background: #16a34a;
 }
 
 .save-message {
@@ -934,7 +934,7 @@ body.theme-light .sidebar {
 }
 
 body.theme-light .sidebar-logo {
-  color: #c73652;
+  color: #16a34a;
 }
 
 body.theme-light .nav-item {
@@ -948,8 +948,8 @@ body.theme-light .nav-item:hover {
 
 body.theme-light .nav-item.active {
   background: #f0f0f5;
-  color: #e94560;
-  border-left-color: #e94560;
+  color: #22c55e;
+  border-left-color: #22c55e;
 }
 
 body.theme-light .main-content {
