@@ -95,6 +95,7 @@ pub async fn list_compose_projects() -> Result<Vec<ComposeProject>> {
 
 pub async fn compose_up(working_dir: &str) -> Result<OperationResult> {
     let output = tokio::process::Command::new(crate::colima::find_binary("docker"))
+        .env("PATH", crate::colima::enriched_path())
         .args(["compose", "up", "-d"])
         .current_dir(working_dir)
         .output()
@@ -116,6 +117,7 @@ pub async fn compose_up(working_dir: &str) -> Result<OperationResult> {
 
 pub async fn compose_stop(working_dir: &str) -> Result<OperationResult> {
     let output = tokio::process::Command::new(crate::colima::find_binary("docker"))
+        .env("PATH", crate::colima::enriched_path())
         .args(["compose", "stop"])
         .current_dir(working_dir)
         .output()
@@ -137,6 +139,7 @@ pub async fn compose_stop(working_dir: &str) -> Result<OperationResult> {
 
 pub async fn compose_down(working_dir: &str) -> Result<OperationResult> {
     let output = tokio::process::Command::new(crate::colima::find_binary("docker"))
+        .env("PATH", crate::colima::enriched_path())
         .args(["compose", "down"])
         .current_dir(working_dir)
         .output()
@@ -158,6 +161,7 @@ pub async fn compose_down(working_dir: &str) -> Result<OperationResult> {
 
 pub async fn compose_restart(working_dir: &str) -> Result<OperationResult> {
     let output = tokio::process::Command::new(crate::colima::find_binary("docker"))
+        .env("PATH", crate::colima::enriched_path())
         .args(["compose", "restart"])
         .current_dir(working_dir)
         .output()

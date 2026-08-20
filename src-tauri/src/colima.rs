@@ -19,6 +19,18 @@ pub fn find_binary(name: &str) -> String {
     name.to_string()
 }
 
+/// .app バンドル起動時の PATH は `/usr/bin:/bin` 程度しかなく、
+/// colima は内部で `limactl` などを PATH 経由で spawn するため起動に失敗する。
+/// Homebrew の bin を先頭に足した PATH を返し、子プロセスに渡す。
+pub fn enriched_path() -> String {
+    let current = std::env::var("PATH").unwrap_or_default();
+    let mut paths = vec!["/opt/homebrew/bin".to_string(), "/usr/local/bin".to_string()];
+    if !current.is_empty() {
+        paths.push(current);
+    }
+    paths.join(":")
+}
+
 /// Docker socket の検出優先順位:
 /// 1. 引数 socket_path が Some の場合はそれを使用
 /// 2. ~/.colima/default/docker.sock
@@ -99,6 +111,7 @@ pub fn list_colima_profiles() -> Result<Vec<String>, AppError> {
 pub async fn colima_start(profile: Option<String>) -> Result<OperationResult, AppError> {
     let profile_arg = profile.unwrap_or_else(|| "default".to_string());
     let mut cmd = tokio::process::Command::new(find_binary("colima"));
+    cmd.env("PATH", enriched_path());
     if profile_arg == "default" {
         cmd.arg("start");
     } else {
@@ -123,6 +136,7 @@ pub async fn colima_start(profile: Option<String>) -> Result<OperationResult, Ap
 pub async fn colima_stop(profile: Option<String>) -> Result<OperationResult, AppError> {
     let profile_arg = profile.unwrap_or_else(|| "default".to_string());
     let mut cmd = tokio::process::Command::new(find_binary("colima"));
+    cmd.env("PATH", enriched_path());
     if profile_arg == "default" {
         cmd.arg("stop");
     } else {
