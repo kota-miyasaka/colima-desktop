@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { confirm } from "@tauri-apps/plugin-dialog";
 import type { VolumeSummary } from "../types/volume";
 import type { OperationResult } from "../types/container";
 
@@ -14,9 +15,10 @@ export function VolumeTable({ volumes, refetch }: Props) {
 
   async function handleRemove(volume: VolumeSummary) {
     if (
-      !window.confirm(
-        `「${volume.name}」を削除しますか？この操作は元に戻せません。`
-      )
+      !(await confirm(
+        `「${volume.name}」を削除しますか？この操作は元に戻せません。`,
+        { title: "確認", kind: "warning" }
+      ))
     ) {
       return;
     }

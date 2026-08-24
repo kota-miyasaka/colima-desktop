@@ -13,6 +13,7 @@
     "store:allow-save",
     "store:allow-delete",
     "store:allow-has",
-    "store:allow-keys"
+    "store:allow-keys",
+    "dialog:default"
   ]
 }

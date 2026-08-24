@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { confirm } from "@tauri-apps/plugin-dialog";
 import type { ImageSummary } from "../types/image";
 import type { OperationResult } from "../types/container";
 
@@ -48,7 +49,7 @@ export function ImageTable({ images, refetch }: Props) {
   async function handleRemove(image: ImageSummary) {
     const displayName = getDisplayName(image);
     const message = `「${displayName}」を削除しますか？この操作は元に戻せません。`;
-    if (!window.confirm(message)) return;
+    if (!(await confirm(message, { title: "確認", kind: "warning" }))) return;
 
     setOperatingId(image.id);
     setOperationError(null);

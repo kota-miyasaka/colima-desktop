@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { confirm } from "@tauri-apps/plugin-dialog";
 import type { ContainerSummary, OperationResult } from "../types/container";
 import { LogViewer } from "./LogViewer";
 
@@ -88,14 +89,14 @@ export function ContainerTable({ containers, refetch }: Props) {
     );
   }
 
-  function handleRemove(container: ContainerSummary) {
+  async function handleRemove(container: ContainerSummary) {
     const name = getContainerName(container);
     const isRunning = container.state === "running";
     const message = isRunning
       ? `「${name}」は起動中です。強制削除しますか？この操作は元に戻せません。`
       : `「${name}」を削除しますか？この操作は元に戻せません。`;
 
-    if (!window.confirm(message)) return;
+    if (!(await confirm(message, { title: "確認", kind: "warning" }))) return;
 
     return handleOperation(container.id, () =>
       invoke<OperationResult>("remove_container", {

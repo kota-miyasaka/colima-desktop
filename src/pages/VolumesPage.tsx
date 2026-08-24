@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { confirm } from "@tauri-apps/plugin-dialog";
 import type { OperationResult } from "../types/container";
 import { useVolumes } from "../hooks/useVolumes";
 import { VolumeTable } from "../components/VolumeTable";
@@ -11,9 +12,10 @@ export function VolumesPage() {
 
   async function handlePrune() {
     if (
-      !window.confirm(
-        "未使用の Volume をすべて削除しますか？この操作は元に戻せません。"
-      )
+      !(await confirm(
+        "未使用の Volume をすべて削除しますか？この操作は元に戻せません。",
+        { title: "確認", kind: "warning" }
+      ))
     ) {
       return;
     }
