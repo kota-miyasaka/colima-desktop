@@ -1,26 +1,114 @@
 # Colima Desktop
 
-macOS 上で [Colima](https://github.com/abiosoft/colima) により起動された Docker Engine を GUI で管理するデスクトップアプリ。
+[English](README.en.md) | 日本語
 
-メニューバー常駐型の軽量アプリで、コンテナ・イメージ・Docker Compose・Volume の操作を一元管理できる。
+![License: MIT](https://img.shields.io/badge/license-MIT-green)
+![Platform: macOS](https://img.shields.io/badge/platform-macOS-lightgrey)
+![Built with Tauri v2](https://img.shields.io/badge/built%20with-Tauri%20v2-24C8DB)
 
-## スクリーンショット
+**[Colima](https://github.com/abiosoft/colima) 向けの軽量な Docker 管理 GUI。**
+Docker Desktop なしで、コンテナ・イメージ・Docker Compose・Volume をメニューバーから操作できます。
 
-| コンテナ管理 | Docker Compose | Settings |
-|---|---|---|
-| _(準備中)_ | _(準備中)_ | _(準備中)_ |
+| Containers | Docker Compose |
+|---|---|
+| ![Containers](doc/images/containers.png) | ![Docker Compose](doc/images/compose.png) |
+| **Images（ライトテーマ）** | **Settings（ライトテーマ）** |
+| ![Images](doc/images/images.png) | ![Settings](doc/images/settings.png) |
+
+## 特徴
+
+- **Colima 専用設計** — Colima の Docker socket を自動検出。複数の Colima Profile も切り替えて管理できる
+- **軽量** — Tauri v2 + Rust 製。メニューバーに常駐し、接続状態と実行中コンテナ数をひと目で確認できる
+- **日常操作がひと通り揃う** — コンテナ / イメージ / Compose / Volume の管理と、Colima の起動・停止
+- **ライト / ダーク両対応**
 
 ## 機能
 
-- **コンテナ管理** — 一覧表示・Start / Stop / Restart / Remove・ログ表示
-- **Docker Compose** — プロジェクト一覧・Up / Stop / Down / Restart
-- **イメージ管理** — 一覧表示・Pull・Remove
-- **Volume 管理** — 一覧表示・削除・未使用 Volume の一括 prune
-- **メニューバー常駐** — 接続状態と実行中コンテナ数を常時表示
-- **複数 Colima Profile** — profile 切り替えによる複数 Docker Engine 対応
-- **Settings** — socket path・refresh interval・テーマ（light / dark）の永続化
+| 画面 | できること |
+|---|---|
+| **Containers** | 一覧表示・Start / Stop / Restart / Remove・ログ表示 |
+| **Compose** | プロジェクト単位の一覧・Up / Stop / Down / Restart |
+| **Images** | 一覧表示・Pull・Remove |
+| **Volumes** | 一覧表示・削除・未使用 Volume の一括削除（Prune） |
+| **Connection** | Docker 接続確認・Colima Start / Stop・Profile 切り替え |
+| **Settings** | socket path・Containers の自動更新間隔・テーマ（light / dark）の保存 |
+| **メニューバー** | 接続状態と実行中コンテナ数の表示・ウィンドウの表示 |
 
-## 技術構成
+削除系の操作は確認ダイアログを挟みます。
+
+## インストール
+
+> 配布用バイナリ（Releases）はまだ用意していません。現在はソースからのビルドが必要です。
+
+### 必要なもの
+
+| ツール | 備考 |
+|---|---|
+| macOS | Apple Silicon で動作確認 |
+| [Colima](https://github.com/abiosoft/colima) と Docker CLI | Compose を使う場合は `docker compose` が必要 |
+| [Node.js](https://nodejs.org/) 20.x | |
+| [Rust](https://www.rust-lang.org/tools/install)（stable） | |
+
+```bash
+brew install colima docker docker-compose
+```
+
+### ビルドして /Applications に入れる
+
+```bash
+git clone https://github.com/kota-miyasaka/colima-desktop.git
+cd colima-desktop
+npm install
+npm run tauri -- build
+
+cp -R "src-tauri/target/release/bundle/macos/Colima Desktop.app" /Applications/
+codesign --force --deep --sign - "/Applications/Colima Desktop.app"
+```
+
+コピー後の `codesign`（アドホック署名）は必須です。省略すると、起動時に署名検証で終了することがあります。
+
+## 使い方
+
+1. ターミナルで `colima start` を実行する（アプリの **Connection** 画面から Start / Stop することもできる）
+2. **Colima Desktop** を起動する
+3. 左のナビゲーションから Containers / Compose / Images / Volumes を切り替えて操作する
+
+Containers 画面は **Settings** の「自動更新間隔」で定期更新できます（既定は off）。各画面の右上の「更新」ボタンで手動更新もできます。
+
+## Docker socket の検出順
+
+```
+1. Settings 画面で保存した socketPath
+2. ~/.colima/{profile}/docker.sock（profile 既定値: "default"）
+3. DOCKER_HOST 環境変数
+4. /var/run/docker.sock
+```
+
+## トラブルシューティング
+
+**Disconnected と表示される**
+`colima status` で Colima が起動しているか確認してください。Profile を使っている場合は **Connection** 画面で Profile を選ぶか、**Settings** で socket path を直接指定します。
+
+**Compose の操作に失敗する**
+Compose の Up / Stop / Down / Restart は `docker compose` コマンドを実行します。`docker compose version` が通るか確認してください。
+
+**起動してもすぐ終了する**
+インストール手順の `codesign` を実行したか確認してください。
+
+## 開発
+
+```bash
+colima start
+npm run tauri -- dev
+```
+
+Rust を Homebrew 経由の rustup で入れている場合、`cargo` が見つからなければ `~/.zshrc` に次を追加します。
+
+```sh
+export PATH="$HOME/.rustup/toolchains/stable-aarch64-apple-darwin/bin:$PATH"
+```
+
+### 技術構成
 
 | レイヤー | 技術 |
 |---|---|
@@ -31,70 +119,16 @@ macOS 上で [Colima](https://github.com/abiosoft/colima) により起動され�
 | 設定保存 | tauri-plugin-store v2 |
 | CLI 実行 | tokio::process::Command |
 
-## 必要な環境
-
-| ツール | バージョン |
-|---|---|
-| macOS | 12 Monterey 以降推奨 |
-| [Colima](https://github.com/abiosoft/colima) | 最新 |
-| Rust (stable) | aarch64-apple-darwin |
-| Node.js | 20.x |
-
-```bash
-# Colima のインストール
-brew install colima docker
-```
-
-## セットアップ
-
-```bash
-git clone https://github.com/yourname/colima-desktop.git
-cd colima-desktop
-npm install
-```
-
-### PATH の設定（Homebrew 経由で rustup をインストールした場合）
-
-`~/.zshrc` に追加：
-
-```sh
-export PATH="$HOME/.rustup/toolchains/stable-aarch64-apple-darwin/bin:$PATH"
-```
-
-## 開発モードで起動
-
-```bash
-# Colima を先に起動しておく
-colima start
-
-# 開発サーバー起動
-unset npm_config_prefix
-export PATH="$HOME/.rustup/toolchains/stable-aarch64-apple-darwin/bin:$PATH"
-export NVM_DIR="$HOME/.nvm" && source "/opt/homebrew/opt/nvm/nvm.sh" && nvm use 20 --silent
-npm run tauri -- dev
-```
-
-## リリースビルド
-
-```bash
-npm run tauri -- build
-# → src-tauri/target/release/bundle/macos/Colima Desktop.app
-```
-
-## Docker socket の検出順
-
-```
-1. Settings 画面で保存した socketPath
-2. ~/.colima/{profile}/docker.sock（profile デフォルト: "default"）
-3. DOCKER_HOST 環境変数
-4. /var/run/docker.sock
-```
-
-## ドキュメント
+### ドキュメント
 
 - [仕様書](doc/SPEC.md) — 機能スコープ・型定義・Tauri コマンド一覧
 - [開発ガイド](doc/DEVELOPMENT.md) — アーキテクチャ・Tauri v2 の注意事項・実装パターン
+- [バックエンド](doc/BACKEND.md) / [フロントエンド](doc/FRONTEND.md)
+
+## コントリビュート
+
+バグ報告・機能要望は [Issues](https://github.com/kota-miyasaka/colima-desktop/issues) からお気軽にどうぞ。Pull Request も歓迎します。
 
 ## ライセンス
 
-MIT
+[MIT](LICENSE)

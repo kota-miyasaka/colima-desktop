@@ -71,7 +71,7 @@ export function ComposeTable({ projects, refetch }: Props) {
             return (
               <>
                 {/* プロジェクト行 */}
-                <tr key={`project-${project.name}`} style={{ background: "var(--bg-secondary, #f5f5f5)" }}>
+                <tr key={`project-${project.name}`} className="compose-project-row">
                   <td colSpan={1} style={{ fontWeight: "bold" }}>
                     {project.name}
                     {project.workingDir && (
