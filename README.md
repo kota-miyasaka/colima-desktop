@@ -1,3 +1,7 @@
+<div align="center">
+
+<img src="src-tauri/icons/128x128@2x.png" width="128" alt="Colima Desktop ロゴ">
+
 # Colima Desktop
 
 [English](README.en.md) | 日本語
@@ -6,8 +10,10 @@
 ![Platform: macOS](https://img.shields.io/badge/platform-macOS-lightgrey)
 ![Built with Tauri v2](https://img.shields.io/badge/built%20with-Tauri%20v2-24C8DB)
 
-**[Colima](https://github.com/abiosoft/colima) 向けの軽量な Docker 管理 GUI。**
+**[Colima](https://github.com/abiosoft/colima) 向けの軽量な Docker 管理 GUI。**<br>
 Docker Desktop なしで、コンテナ・イメージ・Docker Compose・Volume をメニューバーから操作できます。
+
+</div>
 
 | Containers | Docker Compose |
 |---|---|
