@@ -44,7 +44,29 @@ Docker Desktop なしで、コンテナ・イメージ・Docker Compose・Volume
 
 ## インストール
 
-> 配布用バイナリ（Releases）はまだ用意していません。現在はソースからのビルドが必要です。
+### 方法 1: Releases からインストール（推奨）
+
+> 対象: Apple Silicon（M1 以降）の Mac。Intel Mac 向けのビルドは提供していません。
+
+1. [Releases](https://github.com/kota-miyasaka/colima-desktop/releases/latest) から最新の `.dmg` をダウンロードする
+2. `.dmg` を開き、**Colima Desktop** を `Applications` にドラッグする
+3. ターミナルで次を実行し、ダウンロード時に付く隔離属性（quarantine）を外す
+
+   ```bash
+   xattr -cr "/Applications/Colima Desktop.app"
+   ```
+
+4. **Colima Desktop** を起動する
+
+Apple Developer ID での署名・公証をしていないため、手順 3 を行わずに起動すると macOS（Gatekeeper）が「壊れているため開けません」「開発元を検証できません」と警告して起動をブロックします。
+
+手順 3 の代わりに、一度起動を試みてブロックされた後、**システム設定 → プライバシーとセキュリティ** を開き、下の方に表示される「"Colima Desktop" はブロックされました」の **このまま開く** を押す方法もあります（macOS 15 Sequoia 以降では、Finder で右クリック → 「開く」による回避はできません。macOS 14 以前はこの方法でも開けます）。
+
+起動してもすぐ終了する場合は、続けて次を実行してください。
+
+```bash
+codesign --force --deep --sign - "/Applications/Colima Desktop.app"
+```
 
 ### 必要なもの
 
@@ -52,14 +74,14 @@ Docker Desktop なしで、コンテナ・イメージ・Docker Compose・Volume
 |---|---|
 | macOS | Apple Silicon で動作確認 |
 | [Colima](https://github.com/abiosoft/colima) と Docker CLI | Compose を使う場合は `docker compose` が必要 |
-| [Node.js](https://nodejs.org/) 20.x | |
-| [Rust](https://www.rust-lang.org/tools/install)（stable） | |
+| [Node.js](https://nodejs.org/) 20.x | ソースからビルドする場合のみ |
+| [Rust](https://www.rust-lang.org/tools/install)（stable） | ソースからビルドする場合のみ |
 
 ```bash
 brew install colima docker docker-compose
 ```
 
-### ビルドして /Applications に入れる
+### 方法 2: ソースからビルドして /Applications に入れる
 
 ```bash
 git clone https://github.com/kota-miyasaka/colima-desktop.git
@@ -97,6 +119,9 @@ Containers 画面は **Settings** の「自動更新間隔」で定期更新で�
 
 **Compose の操作に失敗する**
 Compose の Up / Stop / Down / Restart は `docker compose` コマンドを実行します。`docker compose version` が通るか確認してください。
+
+**「壊れているため開けません」「開発元を検証できません」と表示される**
+Releases の `.dmg` からインストールした場合は、「方法 1」の手順 3（`xattr -cr`）を実行してください。
 
 **起動してもすぐ終了する**
 インストール手順の `codesign` を実行したか確認してください。

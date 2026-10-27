@@ -46,7 +46,29 @@ Destructive actions ask for confirmation first.
 
 ## Installation
 
-> Prebuilt binaries (Releases) are not available yet. For now you need to build from source.
+### Option 1: Install from Releases (recommended)
+
+> For Apple Silicon (M1 or later) Macs. Intel Mac builds are not provided.
+
+1. Download the latest `.dmg` from [Releases](https://github.com/kota-miyasaka/colima-desktop/releases/latest)
+2. Open the `.dmg` and drag **Colima Desktop** into `Applications`
+3. Remove the quarantine attribute that macOS adds to downloaded files:
+
+   ```bash
+   xattr -cr "/Applications/Colima Desktop.app"
+   ```
+
+4. Launch **Colima Desktop**
+
+The app is not signed with an Apple Developer ID or notarized. If you skip step 3, macOS (Gatekeeper) blocks the launch with "is damaged and can't be opened" or "cannot verify the developer".
+
+Instead of step 3, you can try to open the app once, then go to **System Settings → Privacy & Security** and click **Open Anyway** next to the "Colima Desktop was blocked" message. On macOS 15 Sequoia and later, Control-click → Open no longer bypasses Gatekeeper; on macOS 14 and earlier it still works.
+
+If the app quits right after launch, also run:
+
+```bash
+codesign --force --deep --sign - "/Applications/Colima Desktop.app"
+```
 
 ### Requirements
 
@@ -54,14 +76,14 @@ Destructive actions ask for confirmation first.
 |---|---|
 | macOS | Tested on Apple Silicon |
 | [Colima](https://github.com/abiosoft/colima) and the Docker CLI | `docker compose` is required for Compose features |
-| [Node.js](https://nodejs.org/) 20.x | |
-| [Rust](https://www.rust-lang.org/tools/install) (stable) | |
+| [Node.js](https://nodejs.org/) 20.x | Only when building from source |
+| [Rust](https://www.rust-lang.org/tools/install) (stable) | Only when building from source |
 
 ```bash
 brew install colima docker docker-compose
 ```
 
-### Build and install to /Applications
+### Option 2: Build from source and install to /Applications
 
 ```bash
 git clone https://github.com/kota-miyasaka/colima-desktop.git
@@ -99,6 +121,9 @@ Check that Colima is running with `colima status`. If you use a profile, select 
 
 **Compose operations fail**
 Up / Stop / Down / Restart run the `docker compose` command. Make sure `docker compose version` works.
+
+**"Colima Desktop is damaged and can't be opened" / "cannot verify the developer"**
+If you installed from a Releases `.dmg`, run `xattr -cr` as described in step 3 of "Option 1".
 
 **The app quits right after launch**
 Make sure you ran the `codesign` step from the installation instructions.
