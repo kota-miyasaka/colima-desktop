@@ -1,0 +1,7 @@
+version: 2
+updates:
+  # release.yml でコミット SHA に固定した action を更新する
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

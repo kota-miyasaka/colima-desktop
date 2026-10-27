@@ -1,0 +1,82 @@
+name: Release
+
+# v* タグの push で .dmg をビルドし、GitHub Release を「下書き」として作成する。
+# 下書きを確認してから Web 上で Publish する運用（誤公開の防止）。
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    permissions:
+      contents: write # Release の作成に必要
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-latest # Apple Silicon
+            args: --target aarch64-apple-darwin
+            rust_target: aarch64-apple-darwin
+          # Intel Mac 向け。動作未確認のため既定では無効。
+          # - runner: macos-latest
+          #   args: --target x86_64-apple-darwin
+          #   rust_target: x86_64-apple-darwin
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check version consistency with tag
+        run: |
+          tag_version="${GITHUB_REF_NAME#v}"
+          pkg=$(node -p "require('./package.json').version")
+          conf=$(node -p "require('./src-tauri/tauri.conf.json').version")
+          cargo=$(sed -n 's/^version = "\(.*\)"/\1/p' src-tauri/Cargo.toml | head -n 1)
+          echo "tag=$tag_version package.json=$pkg tauri.conf.json=$conf Cargo.toml=$cargo"
+          if [ "$pkg" != "$tag_version" ] || [ "$conf" != "$tag_version" ] || [ "$cargo" != "$tag_version" ]; then
+            echo "::error::tag と各ファイルの version が一致していません"
+            exit 1
+          fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # サードパーティ action はコミット SHA に固定（更新は Dependabot 等で）
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+        with:
+          toolchain: stable
+          targets: ${{ matrix.rust_target }}
+
+      - uses: swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
+        with:
+          workspaces: src-tauri -> target
+
+      - run: npm ci
+
+      # APPLE_* のシークレットは設定しない（アドホック署名・公証なし）。
+      # 署名・公証を導入する場合は doc/RELEASE.md を参照。
+      - uses: tauri-apps/tauri-action@1deb371b0cd8bd54025b384f1cd735e725c4060f # v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: Colima Desktop ${{ github.ref_name }}
+          releaseBody: |
+            ## インストール / Install
+
+            1. `.dmg` を開き、**Colima Desktop** を `/Applications` にドラッグ
+            2. 未署名アプリのため、初回起動前に次を実行:
+               ```bash
+               xattr -cr "/Applications/Colima Desktop.app"
+               ```
+               または起動を試みた後、**システム設定 → プライバシーとセキュリティ → 「このまま開く」**
+
+            This build is ad-hoc signed (not notarized). Run `xattr -cr "/Applications/Colima Desktop.app"` before the first launch, or use System Settings → Privacy & Security → "Open Anyway".
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}
